@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import re
+
+# Definir una función para limpiar los datos
+def limpiar_datos(ruta_archivo):
+    lineas_limpias = []
+    with open(ruta_archivo, 'r') as archivo:
+        lineas = archivo.readlines()
+        for linea in lineas[1:]:  # Saltar la cabecera
+            linea = linea.strip()
+            partes = linea.split('\t')
+            if len(partes) == 2:
+                f_bode = float(partes[0])
+                # Usar regex para extraer los valores numéricos de la cadena
+                match = re.match(r'\((-?\d+\.\d+e[+-]?\d+)dB,(-?\d+\.\d+e[+-]?\d+)°\)', partes[1])
+                if match:
+                    A_bode = float(match.group(1))
+                    fase_bode = float(match.group(2))
+                    lineas_limpias.append([f_bode, A_bode, fase_bode])
+    return lineas_limpias
+
+# Ruta del archivo
+archivo_entrada = 'ganancia_500ohm'
+
+# Limpiar los datos
+lineas_limpias = limpiar_datos(archivo_entrada)
+
+# Convertir los datos limpios a arrays de numpy
+array_limpio = np.array(lineas_limpias)
+f_bode = array_limpio[:, 0]
+A_bode = array_limpio[:, 1]
+fase_bode = array_limpio[:, 2]
+
+# Graficar los datos
+fig, ax1 = plt.subplots()
+
+color = 'tab:red'
+ax1.set_xlabel('Frecuencia [Hz]')
+ax1.set_ylabel('|A_v| (dB)', color=color)
+ax1.plot(f_bode, A_bode, color=color, label=r'$|A_v|$')
+ax1.tick_params(axis='y', labelcolor=color)
+ax1.set_xlim(0, 10*1e9)
+ax2 = ax1.twinx()  # Instanciar un segundo eje que comparte el mismo eje x
+color = 'tab:blue'
+ax2.set_ylabel('Fase (°)', color=color)  # Ya manejamos la etiqueta x con ax1
+ax2.plot(f_bode, fase_bode, color=color, linestyle='dashed', label='Fase')
+ax2.tick_params(axis='y', labelcolor=color)
+ax2.set_xlim(0, 10*1e9)
+fig.tight_layout()  # Para que no se recorte la etiqueta del eje derecho
+plt.grid()
+ax1.legend(loc='upper left')
+ax2.legend(loc='upper right')
+plt.show()
