@@ -1,0 +1,35 @@
+* C:\Users\Pedro\Desktop\Práctica - Fuentes de Alimentación Conmutada Libreria switching y average para fuentes conmutadas co\boost_average_CL.asc
+C1 out 0 100µF
+Rload out 0 6.6
+L1 N002 out 300µ
+RL N001 in 22m
+Vg in 0 12 AC 0
+XU1 N001 N002 N002 0 d CCM2 Ron=8m VD=0.5 RD=0.05
+XU2 N008 N004 VPOS 0 y LT1215
+B1 d 0 V=limit(V(x), 0.01, 0.9)
+Vz1 x y AC 1
+R4 out N003 2.8k
+R5 N003 0 1k
+Vg1 VPOS 0 12 AC 1
+L2 N007 N003 1Meg
+C3 N007 N010 1
+V1 N010 0 AC 1
+V2 N008 0 2.5
+R1 N009 0 750
+C2 N003 N009 1
+R2 N007 N004 1k
+C4 N004 N005 100n
+R3 N005 y 100
+R6 N006 N004 100k
+C5 N007 N006 2.2µ
+C6 N004 y 200n
+* Simulation directives
+.lib average.lib
+* Boost converter\naverage model
+.ac dec 300 1 100Meg
+* .step param RLOAD list 8 20
+;dc Vduty 0.2 0.9 0.01
+* .tran 0 12m 7m 1u
+.lib LTC.lib
+.backanno
+.end
